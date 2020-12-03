@@ -1,0 +1,33 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: openshiftfilecopyservice
+  namespace: amilus
+spec:
+  schedule: '*/15 * * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: zalenium-videos
+              persistentVolumeClaim:
+                claimName: zalenium-video
+          containers:
+            - name: openshiftfilecopyservice
+              image: >-
+                openshiftfilecopyservice:1.0.1
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              resources:
+                limits:
+                  cpu: '1'
+                  memory: 2Gi
+                requests:
+                  cpu: 50m
+                  memory: 1Gi
+              volumeMounts:
+                - name: zalenium-videos
+                  mountPath: /home/seluser/videos
+          restartPolicy: OnFailure

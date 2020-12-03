@@ -1,0 +1,32 @@
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: curl
+  namespace: amilus
+spec:
+  schedule: '*/15 * * * *'
+  concurrencyPolicy: Forbid
+  suspend: false
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+            - name: curl
+              image: >-
+                curlimages/curl:latest
+              args:
+                - /bin/sh
+                - '-c'
+                - >-
+                  curl
+                  http://localhost:8080/fileservice/copyAllVideos
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
